@@ -1,4 +1,5 @@
-ARCHS = arm64 arm64e
+FINALPACKAGE = 1
+ARCHS = armv7 armv7s arm64 arm64e
 INSTALL_TARGET_PROCESSES = YouTube
 
 include $(THEOS)/makefiles/common.mk

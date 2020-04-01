@@ -45,7 +45,7 @@ dispatch_queue_t queue;
 				if(videoTime == ceil([firstSponsorship[0] floatValue])){
 					CGFloat timeToSkip = [firstSponsorship[1] floatValue] - [firstSponsorship[0] floatValue];
 					[YTDoubleTapToSeekControllerInstance attemptSeekByInterval:timeToSkip];
-					//fixes issue with player bar not going away after sponsorship is skipped
+					//fixes issue with player bar not going away after sponsor is skipped
 					[YTDoubleTapToSeekControllerInstance endDoubleTapToSeek];
 
 					dispatch_async(queue, ^ {
@@ -54,20 +54,20 @@ dispatch_queue_t queue;
 					});
 				}
 
-				else if (videoTime < ceil([firstSponsorship[0] floatValue])) {
+				else if (videoTime < [firstSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^ {
 						[NSThread sleepForTimeInterval:0.5f];
 						[self skipFirstSponsor:data];
 					});
 				}
-				else if (videoTime > ceil([firstSponsorship[0] floatValue])) {
+			else if (videoTime > [firstSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^{
 						[NSThread sleepForTimeInterval:0.5f];
 						currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
 						[self skipSecondSponsor:data];
 					});
 				}
-				else if (videoTime > ceil([secondSponsorship[0] floatValue])) {
+				else if (videoTime > [secondSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^ {
 						[NSThread sleepForTimeInterval:0.5f];
 						currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
@@ -89,14 +89,14 @@ dispatch_queue_t queue;
 					});
 				}
 
-				else if (videoTime < ceil([firstSponsorship[0] floatValue])) {
+				else if (videoTime < [firstSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^ {
 						[NSThread sleepForTimeInterval:0.5f];
 						[self skipFirstSponsor:data];
 					});
 				}
 
-				else if(videoTime > ceil([firstSponsorship[0] floatValue])) {
+				else if(videoTime > [firstSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^ {
 						[NSThread sleepForTimeInterval:0.5f];
 						currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
@@ -119,6 +119,7 @@ dispatch_queue_t queue;
 
 	else {
 		dispatch_async(queue, ^{
+			[NSThread sleepForTimeInterval:0.5f];
 			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
 			[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
 		});
@@ -128,6 +129,7 @@ dispatch_queue_t queue;
 
 %new
 -(void)skipSecondSponsor:(NSDictionary *)data {
+	currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
 	if([data objectForKey:@"sponsorTimes"] != nil) {
 		NSString *videoID = [data objectForKey:@"videoID"];
 		if(currentVideoID == videoID) {
@@ -140,16 +142,17 @@ dispatch_queue_t queue;
 				[YTDoubleTapToSeekControllerInstance attemptSeekByInterval:timeToSkip];
 				[YTDoubleTapToSeekControllerInstance endDoubleTapToSeek];
 				dispatch_async(queue, ^{
+					[NSThread sleepForTimeInterval:0.5f];
 					[self skipFirstSponsor:nil];
 				});
 			}
-			else if(videoTime < ceil([secondSponsorship[0] floatValue])){
+			else if(videoTime < [secondSponsorship[0] floatValue]){
 				dispatch_async(queue, ^{
 					[NSThread sleepForTimeInterval:0.5f];
 					[self skipSecondSponsor:data];
 				});
 			}
-			else if(videoTime > ceil([secondSponsorship[0] floatValue])) {
+			else if(videoTime > [secondSponsorship[0] floatValue]) {
 				dispatch_async(queue, ^{
 					[NSThread sleepForTimeInterval:0.5f];
 					[self skipFirstSponsor:nil];
@@ -158,6 +161,7 @@ dispatch_queue_t queue;
 		}
 		else {
 			dispatch_async(queue, ^ {
+				[NSThread sleepForTimeInterval:0.5f];
 				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
 				[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
 			});

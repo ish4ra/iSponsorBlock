@@ -33,7 +33,7 @@ dispatch_queue_t queue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class sponsorTimes; @class YTWatchController; @class MLHAMPlayer; @class YTDoubleTapToSeekController; @class MLNerdStatsPlaybackData; @class YTMainWindow; 
+@class YTMainWindow; @class MLHAMPlayer; @class MLNerdStatsPlaybackData; @class sponsorTimes; @class YTDoubleTapToSeekController; @class YTWatchController; 
 
 static __inline__ __attribute__((always_inline)) __attribute__((unused)) Class _logos_static_class_lookup$sponsorTimes(void) { static Class _klass; if(!_klass) { _klass = objc_getClass("sponsorTimes"); } return _klass; }
 #line 14 "Tweak.xm"
@@ -80,20 +80,20 @@ static void _logos_method$greaterthan08$YTMainWindow$skipFirstSponsor$(_LOGOS_SE
 					});
 				}
 
-				else if (videoTime < ceil([firstSponsorship[0] floatValue])) {
+				else if (videoTime < [firstSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^ {
 						[NSThread sleepForTimeInterval:0.5f];
 						[self skipFirstSponsor:data];
 					});
 				}
-				else if (videoTime > ceil([firstSponsorship[0] floatValue])) {
+			else if (videoTime > [firstSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^{
 						[NSThread sleepForTimeInterval:0.5f];
 						currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
 						[self skipSecondSponsor:data];
 					});
 				}
-				else if (videoTime > ceil([secondSponsorship[0] floatValue])) {
+				else if (videoTime > [secondSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^ {
 						[NSThread sleepForTimeInterval:0.5f];
 						currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
@@ -115,14 +115,14 @@ static void _logos_method$greaterthan08$YTMainWindow$skipFirstSponsor$(_LOGOS_SE
 					});
 				}
 
-				else if (videoTime < ceil([firstSponsorship[0] floatValue])) {
+				else if (videoTime < [firstSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^ {
 						[NSThread sleepForTimeInterval:0.5f];
 						[self skipFirstSponsor:data];
 					});
 				}
 
-				else if(videoTime > ceil([firstSponsorship[0] floatValue])) {
+				else if(videoTime > [firstSponsorship[0] floatValue]) {
 					dispatch_async(queue, ^ {
 						[NSThread sleepForTimeInterval:0.5f];
 						currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
@@ -145,6 +145,7 @@ static void _logos_method$greaterthan08$YTMainWindow$skipFirstSponsor$(_LOGOS_SE
 
 	else {
 		dispatch_async(queue, ^{
+			[NSThread sleepForTimeInterval:0.5f];
 			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
 			[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
 		});
@@ -154,6 +155,7 @@ static void _logos_method$greaterthan08$YTMainWindow$skipFirstSponsor$(_LOGOS_SE
 
 
 static void _logos_method$greaterthan08$YTMainWindow$skipSecondSponsor$(_LOGOS_SELF_TYPE_NORMAL YTMainWindow* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSDictionary * data) {
+	currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
 	if([data objectForKey:@"sponsorTimes"] != nil) {
 		NSString *videoID = [data objectForKey:@"videoID"];
 		if(currentVideoID == videoID) {
@@ -166,16 +168,17 @@ static void _logos_method$greaterthan08$YTMainWindow$skipSecondSponsor$(_LOGOS_S
 				[YTDoubleTapToSeekControllerInstance attemptSeekByInterval:timeToSkip];
 				[YTDoubleTapToSeekControllerInstance endDoubleTapToSeek];
 				dispatch_async(queue, ^{
+					[NSThread sleepForTimeInterval:0.5f];
 					[self skipFirstSponsor:nil];
 				});
 			}
-			else if(videoTime < ceil([secondSponsorship[0] floatValue])){
+			else if(videoTime < [secondSponsorship[0] floatValue]){
 				dispatch_async(queue, ^{
 					[NSThread sleepForTimeInterval:0.5f];
 					[self skipSecondSponsor:data];
 				});
 			}
-			else if(videoTime > ceil([secondSponsorship[0] floatValue])) {
+			else if(videoTime > [secondSponsorship[0] floatValue]) {
 				dispatch_async(queue, ^{
 					[NSThread sleepForTimeInterval:0.5f];
 					[self skipFirstSponsor:nil];
@@ -184,6 +187,7 @@ static void _logos_method$greaterthan08$YTMainWindow$skipSecondSponsor$(_LOGOS_S
 		}
 		else {
 			dispatch_async(queue, ^ {
+				[NSThread sleepForTimeInterval:0.5f];
 				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
 				[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
 			});
@@ -355,7 +359,7 @@ static MLNerdStatsPlaybackData* _logos_method$lowerthan06$MLNerdStatsPlaybackDat
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_4d344eb2(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_39c394ae(int __unused argc, char __unused **argv, char __unused **envp) {
 	queue = dispatch_queue_create("com.galacticdev.skipSponsorQueue", NULL);
 
 	NSArray *version = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] componentsSeparatedByString:@"."];
