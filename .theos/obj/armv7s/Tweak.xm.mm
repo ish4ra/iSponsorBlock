@@ -9,6 +9,8 @@ MLNerdStatsPlaybackData *MLNerdStatsPlaybackDataInstance;
 
 int secondVersionPart;
 NSString *currentVideoID = nil;
+BOOL didGetVideoIDWhenDataIsNil = FALSE;
+NSString *videoIDWhenDataIsNil = nil;
 
 dispatch_queue_t queue;
 
@@ -33,10 +35,10 @@ dispatch_queue_t queue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class MLHAMPlayer; @class YTDoubleTapToSeekController; @class YTWatchController; @class MLNerdStatsPlaybackData; @class sponsorTimes; @class YTMainWindow; 
+@class YTWatchController; @class MLHAMPlayer; @class MLNerdStatsPlaybackData; @class sponsorTimes; @class YTDoubleTapToSeekController; @class YTMainWindow; 
 
 static __inline__ __attribute__((always_inline)) __attribute__((unused)) Class _logos_static_class_lookup$sponsorTimes(void) { static Class _klass; if(!_klass) { _klass = objc_getClass("sponsorTimes"); } return _klass; }
-#line 14 "Tweak.xm"
+#line 16 "Tweak.xm"
 static YTDoubleTapToSeekController* (*_logos_orig$greaterthan08$YTDoubleTapToSeekController$initWithDelegate$parentResponder$)(_LOGOS_SELF_TYPE_INIT YTDoubleTapToSeekController*, SEL, id, id) _LOGOS_RETURN_RETAINED; static YTDoubleTapToSeekController* _logos_method$greaterthan08$YTDoubleTapToSeekController$initWithDelegate$parentResponder$(_LOGOS_SELF_TYPE_INIT YTDoubleTapToSeekController*, SEL, id, id) _LOGOS_RETURN_RETAINED; static YTMainWindow* (*_logos_orig$greaterthan08$YTMainWindow$initWithFrame$)(_LOGOS_SELF_TYPE_INIT YTMainWindow*, SEL, CGRect) _LOGOS_RETURN_RETAINED; static YTMainWindow* _logos_method$greaterthan08$YTMainWindow$initWithFrame$(_LOGOS_SELF_TYPE_INIT YTMainWindow*, SEL, CGRect) _LOGOS_RETURN_RETAINED; static void _logos_method$greaterthan08$YTMainWindow$skipFirstSponsor$(_LOGOS_SELF_TYPE_NORMAL YTMainWindow* _LOGOS_SELF_CONST, SEL, NSDictionary *); static void _logos_method$greaterthan08$YTMainWindow$skipSecondSponsor$(_LOGOS_SELF_TYPE_NORMAL YTMainWindow* _LOGOS_SELF_CONST, SEL, NSDictionary *); static YTWatchController* (*_logos_orig$greaterthan08$YTWatchController$initWithWatchFlowController$parentResponder$)(_LOGOS_SELF_TYPE_INIT YTWatchController*, SEL, id, id) _LOGOS_RETURN_RETAINED; static YTWatchController* _logos_method$greaterthan08$YTWatchController$initWithWatchFlowController$parentResponder$(_LOGOS_SELF_TYPE_INIT YTWatchController*, SEL, id, id) _LOGOS_RETURN_RETAINED; static MLNerdStatsPlaybackData* (*_logos_orig$greaterthan08$MLNerdStatsPlaybackData$initWithPlayer$videoID$CPN$)(_LOGOS_SELF_TYPE_INIT MLNerdStatsPlaybackData*, SEL, id, id, id) _LOGOS_RETURN_RETAINED; static MLNerdStatsPlaybackData* _logos_method$greaterthan08$MLNerdStatsPlaybackData$initWithPlayer$videoID$CPN$(_LOGOS_SELF_TYPE_INIT MLNerdStatsPlaybackData*, SEL, id, id, id) _LOGOS_RETURN_RETAINED; 
 
 
@@ -51,7 +53,18 @@ static YTMainWindow* _logos_method$greaterthan08$YTMainWindow$initWithFrame$(_LO
 	dispatch_async(queue, ^ {
 		[NSThread sleepForTimeInterval:1.0f];
 		currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
-		[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+		while(TRUE){
+			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+			if(currentVideoID != nil){
+				[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+				break;
+			}
+			else {
+				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+				[NSThread sleepForTimeInterval:0.5f];
+				continue;
+			}
+		}
 	});
 	return _logos_orig$greaterthan08$YTMainWindow$initWithFrame$(self, _cmd, arg1);
 }
@@ -145,9 +158,25 @@ static void _logos_method$greaterthan08$YTMainWindow$skipFirstSponsor$(_LOGOS_SE
 
 	else {
 		dispatch_async(queue, ^{
-			[NSThread sleepForTimeInterval:0.5f];
-			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
-			[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+			if(didGetVideoIDWhenDataIsNil == FALSE){
+				videoIDWhenDataIsNil = [MLNerdStatsPlaybackDataInstance videoID];
+				didGetVideoIDWhenDataIsNil = TRUE;
+			}
+			while(TRUE){
+				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+				if(currentVideoID != videoIDWhenDataIsNil){
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+					didGetVideoIDWhenDataIsNil = FALSE;
+					break;
+				}
+				else {
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					[NSThread sleepForTimeInterval:0.5f];
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					continue;
+				}
+			}
 		});
 	}
 
@@ -226,7 +255,18 @@ static YTMainWindow* _logos_method$lowerthan06$YTMainWindow$initWithFrame$(_LOGO
 	dispatch_async(queue, ^ {
 		[NSThread sleepForTimeInterval:1.0f];
 		currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
-		[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+		while(TRUE){
+			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+			if(currentVideoID != nil){
+				[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+				break;
+			}
+			else {
+				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+				[NSThread sleepForTimeInterval:0.5f];
+				continue;
+			}
+		}
 	});
 	return _logos_orig$lowerthan06$YTMainWindow$initWithFrame$(self, _cmd, arg1);
 }
@@ -306,8 +346,25 @@ static void _logos_method$lowerthan06$YTMainWindow$skipFirstSponsor$(_LOGOS_SELF
 
 	else {
 		dispatch_async(queue, ^{
-			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
-			[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+			if(didGetVideoIDWhenDataIsNil == FALSE){
+				videoIDWhenDataIsNil = [MLNerdStatsPlaybackDataInstance videoID];
+				didGetVideoIDWhenDataIsNil = TRUE;
+			}
+			while(TRUE){
+				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+				if(currentVideoID != videoIDWhenDataIsNil){
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					[_logos_static_class_lookup$sponsorTimes() getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+					didGetVideoIDWhenDataIsNil = FALSE;
+					break;
+				}
+				else {
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					[NSThread sleepForTimeInterval:0.5f];
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					continue;
+				}
+			}
 		});
 	}
 
@@ -359,7 +416,7 @@ static MLNerdStatsPlaybackData* _logos_method$lowerthan06$MLNerdStatsPlaybackDat
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_39c394ae(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_d4641f91(int __unused argc, char __unused **argv, char __unused **envp) {
 	queue = dispatch_queue_create("com.galacticdev.skipSponsorQueue", NULL);
 
 	NSArray *version = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] componentsSeparatedByString:@"."];

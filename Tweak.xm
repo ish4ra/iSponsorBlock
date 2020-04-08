@@ -8,6 +8,8 @@ MLNerdStatsPlaybackData *MLNerdStatsPlaybackDataInstance;
 
 int secondVersionPart;
 NSString *currentVideoID = nil;
+BOOL didGetVideoIDWhenDataIsNil = FALSE;
+NSString *videoIDWhenDataIsNil = nil;
 
 dispatch_queue_t queue;
 
@@ -25,7 +27,18 @@ dispatch_queue_t queue;
 	dispatch_async(queue, ^ {
 		[NSThread sleepForTimeInterval:1.0f];
 		currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
-		[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+		while(TRUE){
+			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+			if(currentVideoID != nil){
+				[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+				break;
+			}
+			else {
+				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+				[NSThread sleepForTimeInterval:0.5f];
+				continue;
+			}
+		}
 	});
 	return %orig;
 }
@@ -119,9 +132,25 @@ dispatch_queue_t queue;
 
 	else {
 		dispatch_async(queue, ^{
-			[NSThread sleepForTimeInterval:0.5f];
-			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
-			[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+			if(didGetVideoIDWhenDataIsNil == FALSE){
+				videoIDWhenDataIsNil = [MLNerdStatsPlaybackDataInstance videoID];
+				didGetVideoIDWhenDataIsNil = TRUE;
+			}
+			while(TRUE){
+				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+				if(currentVideoID != videoIDWhenDataIsNil){
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+					didGetVideoIDWhenDataIsNil = FALSE;
+					break;
+				}
+				else {
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					[NSThread sleepForTimeInterval:0.5f];
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					continue;
+				}
+			}
 		});
 	}
 
@@ -200,7 +229,18 @@ dispatch_queue_t queue;
 	dispatch_async(queue, ^ {
 		[NSThread sleepForTimeInterval:1.0f];
 		currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
-		[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+		while(TRUE){
+			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+			if(currentVideoID != nil){
+				[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+				break;
+			}
+			else {
+				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+				[NSThread sleepForTimeInterval:0.5f];
+				continue;
+			}
+		}
 	});
 	return %orig;
 }
@@ -280,8 +320,25 @@ dispatch_queue_t queue;
 
 	else {
 		dispatch_async(queue, ^{
-			currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
-			[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+			if(didGetVideoIDWhenDataIsNil == FALSE){
+				videoIDWhenDataIsNil = [MLNerdStatsPlaybackDataInstance videoID];
+				didGetVideoIDWhenDataIsNil = TRUE;
+			}
+			while(TRUE){
+				currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+				if(currentVideoID != videoIDWhenDataIsNil){
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					[%c(sponsorTimes) getSponsorTimes:currentVideoID completionTarget:self completionSelector:@selector(skipFirstSponsor:)];
+					didGetVideoIDWhenDataIsNil = FALSE;
+					break;
+				}
+				else {
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					[NSThread sleepForTimeInterval:0.5f];
+					currentVideoID = [MLNerdStatsPlaybackDataInstance videoID];
+					continue;
+				}
+			}
 		});
 	}
 
